@@ -1,1 +1,145 @@
-<h1>merhaba dünya </h1>
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OyunKutusu - Mini Oyunlar</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; background: #2c3e50; color: white; margin: 0; padding: 20px; }
+        .ad-slot { background: #34495e; border: 2px dashed #bdc3c7; margin: 15px auto; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #ecf0f1; }
+        .leaderboard { width: 100%; max-width: 728px; height: 90px; }
+        .box-ad { width: 300px; height: 250px; display: inline-block; vertical-align: top; }
+        .game-container { background: #ecf0f1; color: #2c3e50; padding: 20px; border-radius: 10px; max-width: 800px; margin: 0 auto; }
+        .game-area { height: 300px; background: #bdc3c7; position: relative; overflow: hidden; margin-bottom: 10px; border-radius: 5px; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; background: #27ae60; color: white; border: none; border-radius: 5px; }
+        button:hover { background: #2ecc71; }
+        .hidden { display: none; }
+        .menu-btn { display: block; width: 200px; margin: 10px auto; padding: 15px; text-decoration: none; color: white; background: #2980b9; border-radius: 5px; font-weight: bold; }
+        .menu-btn:hover { background: #3498db; }
+        .card { width: 60px; height: 80px; background: #34495e; color: white; display: inline-block; margin: 5px; line-height: 80px; font-size: 24px; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="ad-slot leaderboard" onclick="alert('Buraya Google AdSense 728x90 reklam kodu gelecek.')">
+        Üst Reklam Alanı (728x90)
+    </div>
+
+    <h1>🎮 OyunKutusu</h1>
+    <p>İstediğin oyunu seç ve oyna!</p>
+
+    <div id="main-menu">
+        <a href="#" class="menu-btn" onclick="switchGame('reflex')">1. Refleks Tıkla</a>
+        <a href="#" class="menu-btn" onclick="switchGame('space')">2. Uzay Kaçışı</a>
+        <a href="#" class="menu-btn" onclick="switchGame('memory')">3. Hafıza Kartları</a>
+    </div>
+
+    <div id="game-wrapper" class="game-container hidden">
+        <button onclick="goHome()">Ana Menüye Dön</button>
+        <div id="score-board">Skor: 0</div>
+        <div id="game-screen" class="game-area"></div>
+    </div>
+
+    <div class="ad-slot box-ad" onclick="alert('Buraya Google AdSense 300x250 reklam kodu gelecek.')">
+        Yan Reklam (300x250)
+    </div>
+
+    <script>
+        const menu = document.getElementById('main-menu');
+        const wrapper = document.getElementById('game-wrapper');
+        const screen = document.getElementById('game-screen');
+        const scoreBoard = document.getElementById('score-board');
+        let score = 0;
+        let gameInterval;
+
+        function switchGame(gameType) {
+            menu.classList.add('hidden');
+            wrapper.classList.remove('hidden');
+            screen.innerHTML = '';
+            score = 0;
+            scoreBoard.innerText = 'Skor: ' + score;
+            clearInterval(gameInterval);
+
+            if (gameType === 'reflex') initReflex();
+            else if (gameType === 'space') initSpace();
+            else if (gameType === 'memory') initMemory();
+        }
+
+        function goHome() {
+            wrapper.classList.add('hidden');
+            menu.classList.remove('hidden');
+            clearInterval(gameInterval);
+        }
+
+        // 1. Refleks Oyunu
+        function initReflex() {
+            screen.innerHTML = '<p>Buton çıkınca hemen tıkla!</p>';
+            setTimeout(() => {
+                const btn = document.createElement('button');
+                btn.innerText = 'TIKLA!';
+                btn.style.position = 'absolute';
+                btn.style.top = Math.random() * 200 + 'px';
+                btn.style.left = Math.random() * 600 + 'px';
+                btn.onclick = () => {
+                    score += 100;
+                    scoreBoard.innerText = 'Skor: ' + score;
+                    btn.remove();
+                    initReflex();
+                };
+                screen.appendChild(btn);
+            }, 1000);
+        }
+
+        // 2. Uzay Oyunu
+        function initSpace() {
+            const player = document.createElement('div');
+            player.style.width = '30px'; player.style.height = '30px';
+            player.style.background = '#e74c3c'; player.style.position = 'absolute';
+            player.style.bottom = '10px'; player.style.left = '50%';
+            screen.appendChild(player);
+
+            window.onkeydown = (e) => {
+                let left = parseInt(player.style.left);
+                if (e.key === 'ArrowLeft' && left > 0) player.style.left = (left - 20) + 'px';
+                if (e.key === 'ArrowRight' && left < 570) player.style.left = (left + 20) + 'px';
+            };
+
+            gameInterval = setInterval(() => {
+                const enemy = document.createElement('div');
+                enemy.style.width = '20px'; enemy.style.height = '20px';
+                enemy.style.background = '#f1c40f'; enemy.style.position = 'absolute';
+                enemy.style.top = '0px'; enemy.style.left = Math.random() * 580 + 'px';
+                screen.appendChild(enemy);
+
+                let enemyTop = 0;
+                let drop = setInterval(() => {
+                    enemyTop += 5;
+                    enemy.style.top = enemyTop + 'px';
+                    if (enemyTop > 270) {
+                        clearInterval(drop);
+                        enemy.remove();
+                        score += 10;
+                        scoreBoard.innerText = 'Skor: ' + score;
+                    }
+                }, 50);
+            }, 1000);
+        }
+
+        // 3. Hafıza Oyunu
+        function initMemory() {
+            const cards = ['A', 'A', 'B', 'B', 'C', 'C'].sort(() => Math.random() - 0.5);
+            cards.forEach(c => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerText = '?';
+                card.dataset.val = c;
+                card.onclick = function() {
+                    this.innerText = this.dataset.val;
+                    this.style.background = '#2ecc71';
+                };
+                screen.appendChild(card);
+            });
+        }
+    </script>
+</body>
+</html>
